@@ -1,5 +1,6 @@
 package com.example.smartfarm;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.webkit.WebSettings;
@@ -22,53 +23,72 @@ import okhttp3.Response;
 
 public class UserDataActivity extends AppCompatActivity {
 
+    HttpConnection httpConn = HttpConnection.getInstance();
+
+    String getID;
+    TextView getIDText, CropText, CO2Text, WaterText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_userdata);
 
-        final TextView dataText1, dataText2, dataText3;
-        dataText1 = (TextView) findViewById(R.id.dataText1);
-        dataText2 = (TextView) findViewById(R.id.dataText2);
-        dataText3 = (TextView) findViewById(R.id.dataText3);
+        Intent intent = getIntent();
 
-        controlWeb();
+        getIDText = (TextView) findViewById(R.id.getID);
+        CropText = (TextView) findViewById(R.id.dataText1);
+        CO2Text = (TextView) findViewById(R.id.dataText2);
+        WaterText = (TextView) findViewById(R.id.dataText3);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        okHttpClient.newCall(new Request.Builder().url("http://15.165.26.49/jsonTest02.php").build()).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+        getID = intent.getStringExtra("id");    // 클릭한 사용자의 아이디
+        getIDText.setText(getID + "님의 작물");
 
+        sendData(getID);
+    }
+
+    // 아이디와 비번 전송
+    private void sendData(final String User_ID) {
+        new Thread() {
+            public void run() {
+                httpConn.dataRequest(User_ID, callback);
             }
+        }.start();
+    }
 
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+    // 로그인 요청 후 응답을 받는다.
+    private final Callback callback = new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            //Log.d(TAG, "콜백오류:"+e.getMessage());
+        }
 
-                new Handler(getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response.body().string());
-                            dataText1.setText(jsonObject.getString("지역"));
-                            dataText2.setText(jsonObject.getString("기온"));
-                            dataText3.setText(jsonObject.getString("날씨"));
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
+        @Override
+        public void onResponse(Call call, final Response response) throws IOException {
+
+            new Handler(getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // 응답 메세지를 json형태로 받아온다.
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+
+                        // 로그인이 수락되면 메인액티비티로 이동한다.
+                        String msg = jsonObject.getString("success");
+                        if(msg == "true") {
+                            CropText.setText(jsonObject.getString("UserCrop_Name"));
+                            CO2Text.setText(jsonObject.getString("CarbonDioxide_Data"));
+                            WaterText.setText(jsonObject.getString("WaterSensor_Data"));
                         }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                });
-            }
-        });
-    }
+                }
 
-    private void controlWeb() {
-        WebView webView = (WebView) findViewById(R.id.webView);
-        WebSettings webSettings = webView.getSettings();    // mobile web setting
-        webSettings.setJavaScriptEnabled(true);     // 자바스크립트 허용
-        webSettings.setLoadWithOverviewMode(true);      // 컨텐츠가 웹뷰보다 클 경우 스크린 크기에 맞게 조정
+            });
+        }
+    };
 
-        webView.loadUrl("http://192.168.55.185:8000/serial");
-    }
 }

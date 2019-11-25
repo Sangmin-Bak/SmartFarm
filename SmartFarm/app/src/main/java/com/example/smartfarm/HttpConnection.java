@@ -21,7 +21,7 @@ public class HttpConnection {
 
     private HttpConnection() { this.client = new OkHttpClient(); }
 
-    /** DB에 회원가입 정보 저장. */
+    /** DB에 회원가입 정보 저장. **/
     public void registerUser(String User_ID, String User_Passwd, String User_Nickname, String AGE, Callback callback) {
         RequestBody body = new FormBody.Builder()
                 .add("User_ID", User_ID)
@@ -36,7 +36,7 @@ public class HttpConnection {
         client.newCall(request).enqueue(callback);
     }
 
-    /** 로그인 요청. */
+    /** 로그인 요청. **/
     // DB에 저장된 id와 비번으로 로그인할 경우 로그인 수락
     public void loginRequest(String User_ID, String User_Passwd, Callback callback) {
         RequestBody body = new FormBody.Builder()
@@ -45,6 +45,19 @@ public class HttpConnection {
                 .build();
         Request request = new Request.Builder()
                 .url("http://15.165.26.49/android_login.php")
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    /** 클릭한 사용자의 작물 정보를 조회. **/
+    // DB에 저장된 id와 비번으로 로그인할 경우 로그인 수락
+    public void dataRequest(String User_ID, Callback callback) {
+        RequestBody body = new FormBody.Builder()
+                .add("User_ID", User_ID)
+                .build();
+        Request request = new Request.Builder()
+                .url("http://15.165.26.49/user_data.php")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);

@@ -38,7 +38,8 @@ public class User {
         this.userName = userName;
     }
 
-    public User(String userName) {
+    public User(String userID, String userName) {
+        this.userID = userID;
         this.userName = userName;
     }
 

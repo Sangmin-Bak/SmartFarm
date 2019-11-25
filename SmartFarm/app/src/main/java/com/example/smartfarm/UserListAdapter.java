@@ -43,12 +43,12 @@ public class UserListAdapter extends BaseAdapter {
         View v = View.inflate(context, R.layout.userlist, null);
 
         //뷰에 다음 컴포넌트들을 연결시켜줌
-        //TextView userID = (TextView)v.findViewById(R.id.userID);
+        TextView userID = (TextView)v.findViewById(R.id.ID);
         //TextView userPassword = (TextView)v.findViewById(R.id.userPassword);
         TextView userName = (TextView)v.findViewById(R.id.Name);
         //TextView userAge = (TextView)v.findViewById(R.id.userAge);
 
-        //userID.setText(userList.get(i).getUserID());
+        userID.setText(userList.get(i).getUserID());
         //userPassword.setText(userList.get(i).getUserPassword());
         userName.setText(userList.get(i).getUserName());
         //userAge.setText(userList.get(i).getUserAge());
