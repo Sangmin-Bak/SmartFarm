@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.list);
         userList = new ArrayList<User>();
 
-        getUser("http://15.165.26.49/user_list.php");
+        getUser("http://15.165.80.105/user_list.php");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

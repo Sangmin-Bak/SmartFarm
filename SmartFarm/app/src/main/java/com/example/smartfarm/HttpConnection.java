@@ -1,7 +1,10 @@
 package com.example.smartfarm;
 
+import java.io.File;
+
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -30,7 +33,7 @@ public class HttpConnection {
                 .add("AGE", AGE)
                 .build();
         Request request = new Request.Builder()
-                .url("http://15.165.26.49/android_register.php")
+                .url("http://15.165.80.105/android_register.php")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);
@@ -44,7 +47,7 @@ public class HttpConnection {
                 .add("User_Passwd", User_Passwd)
                 .build();
         Request request = new Request.Builder()
-                .url("http://15.165.26.49/android_login.php")
+                .url("http://15.165.80.105/android_login.php")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);
@@ -57,10 +60,22 @@ public class HttpConnection {
                 .add("User_ID", User_ID)
                 .build();
         Request request = new Request.Builder()
-                .url("http://15.165.26.49/user_data.php")
+                .url("http://15.165.80.105/user_data.php")
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);
+    }
+
+    public void sendFile(File file) {
+        MultipartBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("files", file.getName(), RequestBody.create(MultipartBody.FORM, file))
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://15.165.80.105/getFiles.php")
+                .post(body)
+                .build();
     }
 }
 
